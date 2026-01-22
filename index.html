@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boda Yazmin & Saul</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* --- PALETA DE COLORES BEIGE/CÁLIDA --- */
+            --color-principal: #CBB9A4; 
+            --color-solapa-claro: #E6D8CA; /* Tono claro para contraste en solapa */
+            --color-texto-oscuro: #6b5b4a; 
+            --dorado: #C5A059;
+            --texto-principal: #594a3c;
+            --fondo-papel: #F4F1EA;
+            --fondo-tarjeta: #FAF9F6;
+            
+            /* TEXTURA REALISTA (TIPO PAPEL KRAFT BEIGE) */
+            --textura-url: url('https://www.transparenttextures.com/patterns/beige-paper.png');
+            
+            /* --- FLORES EN LAS ESQUINAS --- */
+            --borde-floral-top: url('https://i.postimg.cc/GmYGzBF3/Flores_arriba.png'); 
+            --borde-floral-bottom: url('https://i.postimg.cc/3wXjryNP/Floresabajo.png');
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--fondo-papel);
+            background-image: var(--textura-url);
+            color: var(--texto-principal);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 { font-family: 'Cinzel Decorative', cursive; font-weight: 400; color: var(--color-texto-oscuro); text-align: center; }
+        .script-font { font-family: 'Pinyon Script', cursive; font-size: 2.5rem; color: var(--dorado); text-align: center; }
+        .monogram { font-family: 'Pinyon Script', cursive; font-size: 6rem; line-height: 0.8; }
+        
+        .btn {
+            display: inline-block; padding: 12px 30px; background-color: var(--color-principal); color: white;
+            text-decoration: none; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;
+            border-radius: 2px; transition: all 0.3s; border: 1px solid var(--color-principal); cursor: pointer;
+        }
+        .btn:hover { background-color: transparent; color: var(--color-texto-oscuro); border-color: var(--color-texto-oscuro); }
+
+        /* CIRCULOS DE COLORES PARA CODIGO DE VESTIMENTA */
+        .palette-container { display: flex; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+        .color-circle { width: 35px; height: 35px; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
+
+        /* --- PANTALLA DE BIENVENIDA (SOBRE REALISTA + FLORES) --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: var(--fondo-papel); background-image: var(--textura-url);
+            z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1.2s ease-out, visibility 1.2s;
+            cursor: pointer;
+        }
+
+        /* ADORNOS FLORALES EN PANTALLA DE BIENVENIDA */
+        #welcome-screen::before, #welcome-screen::after {
+            content: ''; position: absolute; width: 200px; height: 200px;
+            background-size: contain; background-repeat: no-repeat; pointer-events: none; opacity: 0.8; z-index: 1999;
+        }
+        #welcome-screen::before { top: 0; left: 0; background-image: var(--borde-floral-top); background-position: top left; }
+        #welcome-screen::after { bottom: 0; right: 0; background-image: var(--borde-floral-bottom); background-position: bottom right; }
+
+
+        #envelope-layer { position: relative; z-index: 2001; display: flex; flex-direction: column; align-items: center; perspective: 1500px; }
+        .envelope-wrapper { position: relative; width: 350px; height: 220px; margin-bottom: 20px; }
+
+        /* SOMBRA Y TEXTURA PARA EL SOBRE COMPLETO */
+        .envelope-back { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--color-principal); 
+            background-image: var(--textura-url); 
+            border-radius: 5px; z-index: 1; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.1);
+        }
+        .photo-card { position: absolute; bottom: 5px; left: 35px; width: 280px; height: 130px; background-size: cover; background-position: center; background-image: url('https://i.postimg.cc/0NmHq277/Tu_y_yo.jpg'); background-color: #fff; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; transition: transform 1.2s 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), z-index 0s 0.6s; }
+        .envelope-front { 
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 75%; 
+            background-color: var(--color-principal); 
+            background-image: var(--textura-url); 
+            clip-path: polygon(0 0, 50% 25%, 100% 0, 100% 100%, 0 100%); 
+            z-index: 3; 
+            filter: drop-shadow(0 -2px 5px rgba(0,0,0,0.1)); 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* ESTRUCTURA REALISTA DE LA SOLAPA */
+        .envelope-flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+            pointer-events: none;
+        }
+        /* Dibujo del triángulo de la solapa (COLOR MÁS CLARO PARA CONTRASTE) */
+        .envelope-flap::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--color-solapa-claro); /* Uso del color claro */
+            background-image: var(--textura-url);
+            clip-path: polygon(0 0, 50% 60%, 100% 0); /* Punta al 60% */
+            z-index: -1; 
+            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5));
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        /* POSICIÓN EXACTA DEL SELLO EN LA PUNTA */
+        .seal-on-flap {
+            position: absolute;
+            top: 60%; 
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            width: 110px; height: auto;
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.6)); 
+            z-index: 6;
+        }
+        .envelope-flap .monogram {
+            position: absolute; top: 10px; 
+            width: 100%; text-align: center;
+            font-family: 'Cinzel Decorative', cursive; font-size: 3.5rem; font-weight: 400;
+            background: linear-gradient(to bottom, #fff, #f0e6dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2)); letter-spacing: 2px; line-height: 1; z-index: 7;
+            transition: opacity 0.3s ease-in;
+        }
+
+        /* Estados al abrir */
+        .open-state .envelope-flap { transform: rotateX(180deg); z-index: 0; }
+        .open-state .envelope-flap .monogram { opacity: 0; }
+        .open-state .photo-card { transform: translateY(-300px) scale(1.5) rotate(2deg); z-index: 10; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 4px solid #fff; }
+        .open-state #click-hint { opacity: 0; transition: opacity 0.5s; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        #main-content { display: none; opacity: 0; transition: opacity 1.5s ease-in; padding-bottom: 20px; }
+        section { padding: 60px 20px; max-width: 800px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+        
+        .framed-section::before, .framed-section::after { content: ''; position: absolute; width: 150px; height: 150px; background-size: contain; background-repeat: no-repeat; pointer-events: none; opacity: 0.9; z-index: -1; }
+        .framed-section::before { top: -20px; left: -20px; background-image: var(--borde-floral-top); background-position: top left; }
+        .framed-section::after { bottom: -20px; right: -20px; background-image: var(--borde-floral-bottom); background-position: bottom right; left: auto; }
+
+        .formal-card { background-color: var(--fondo-tarjeta); background-image: var(--textura-url); padding: 50px 30px; margin: 40px auto; max-width: 600px; border: 1px solid #e6dac8; box-shadow: 0 5px 15px rgba(0,0,0,0.03); position: relative; z-index: 2; text-align: center; }
+        .formal-card::before { content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid var(--color-principal); pointer-events: none; opacity: 0.4; }
+
+        .countdown-container { display: flex; justify-content: center; gap: 15px; margin: 20px auto; padding: 20px; position: relative; z-index: 2; }
+        .cd-box { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 65px; height: 65px; background-color: var(--color-principal); color: white; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .cd-number { font-family: 'Cinzel Decorative', cursive; font-size: 1.4rem; line-height: 1; }
+        .cd-label { font-size: 0.5rem; text-transform: uppercase; margin-top: 5px; color: #fff; letter-spacing: 1px; }
+
+        .church-container { margin: 30px auto; max-width: 500px; height: 350px; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; position: relative; background-color: #eee; z-index: 2; }
+        .animated-img { width: 100%; height: 100%; object-fit: cover; animation: slowZoom 20s infinite alternate ease-in-out; }
+        @keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+
+        .rsvp-container { background: var(--fondo-tarjeta); border-radius: 20px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; border: 1px solid #e6dac8; position: relative; z-index: 2; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; color: #666; margin-bottom: 8px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 15px; border: 1px solid #d1d9ce; border-radius: 12px; background-color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #444; outline: none; transition: border 0.3s; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--color-principal); background-color: white; }
+        .hidden { display: none; }
+        .btn-submit { width: 100%; background-color: var(--color-principal); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 1rem; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; margin-top: 10px; transition: background 0.3s; }
+        .btn-submit:hover { background-color: var(--color-texto-oscuro); }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; display: none; margin-left: 10px; vertical-align: middle;}
+
+        .timeline-list { list-style: none; text-align: left; display: inline-block; margin-top: 30px; position: relative; z-index: 2; }
+        .timeline-list li { padding-left: 30px; position: relative; margin-bottom: 25px; border-left: 2px solid var(--dorado); }
+        .timeline-list li::before { content: ''; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; background: var(--dorado); border-radius: 50%; }
+        .time { font-weight: bold; color: var(--color-texto-oscuro); margin-right: 10px; }
+
+        .music-control { position: fixed; bottom: 20px; right: 20px; z-index: 3000; background: var(--color-principal); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid white; transition: transform 0.2s; }
+        .music-icon { font-size: 24px; animation: spin 5s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .footer-msg { margin-top: 50px; text-align: center; padding: 40px 20px; border-top: 1px solid #e6dac8; position: relative; z-index: 2; }
+        .footer-title { font-family: 'Pinyon Script', cursive; font-size: 2.2rem; color: var(--color-texto-oscuro); margin-bottom: 10px; }
+        .footer-text { font-size: 0.9rem; color: #666; letter-spacing: 1px; }
+
+        /* ESTILOS BOLETO */
+        .ticket-card {
+            background-color: var(--fondo-tarjeta);
+            border: 3px solid var(--color-principal);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            width: 220px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 10px 20px rgba(107, 91, 74, 0.1);
+            position: relative;
+        }
+        .ticket-card::before, .ticket-card::after {
+            content: ''; position: absolute; top: 50%; width: 20px; height: 20px;
+            background-color: var(--fondo-tarjeta); 
+            border-radius: 50%; transform: translateY(-50%);
+            border: 3px solid var(--color-principal);
+            z-index: 1;
+        }
+        .ticket-card::before { left: -13px; border-right: none; }
+        .ticket-card::after { right: -13px; border-left: none; }
+
+        .ticket-number {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 5rem;
+            line-height: 1;
+            color: var(--color-texto-oscuro);
+        }
+        .ticket-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--color-texto-oscuro);
+            margin-top: -10px;
+        }
+        .ticket-banner {
+            background-color: var(--color-principal);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) { .monogram { font-size: 4.5rem; } .framed-section::before, .framed-section::after { height: 100px; width: 100px; } h2 { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://www.dropbox.com/scl/fi/p32vkmqx28zfnqrfznaca/Billie-Eilish-BIRDS-OF-A-FEATHER-Official-Music-Video.mp3?rlkey=q3sykhw0eek3hmenlver3uhqa&st=o8ty3r4y&raw=1" type="audio/mpeg">
+    </audio>
+    <div class="music-control" onclick="toggleMusic()">🎵</div>
+
+    <div id="welcome-screen" onclick="iniciarExperiencia()">
+        <div id="envelope-layer">
+            <div class="envelope-wrapper">
+                <div class="envelope-back"></div>
+                <div class="photo-card"></div>
+                <div class="envelope-front"></div>
+                <div class="envelope-flap">
+                    <div class="monogram">Y&S</div>
+                    <img src="https://i.postimg.cc/4NY05TWH/Sello.png" alt="Sello" class="seal-on-flap">
+                </div>
+            </div>
+            <p id="click-hint" style="margin-top: 40px; font-family: 'Cinzel Decorative'; font-size: 1.2rem; color: var(--color-texto-oscuro);">Toca el sobre para abrir</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        
+        <section class="framed-section" style="padding-top: 120px;">
+            <div class="formal-card">
+                <p class="script-font" style="text-align: center; width: 100%;">Con la bendición de Dios y nuestros padres</p>
+                <div style="margin: 30px 0; text-align: center;">
+                    <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%; display: block; line-height: 1.8;">
+                        Tenemos el honor de invitarte<br>a<br>nuestra boda
+                    </p>
+                    <h1>Yazmin & Saul</h1>
+                </div>
+                <p style="font-size: 1.2rem; border-top: 1px solid var(--dorado); border-bottom: 1px solid var(--dorado); display: inline-block; padding: 10px 30px; margin: 20px 0;">
+                    SÁBADO • 17 • ABRIL • 2027
+                </p>
+                <p>Puebla, México</p>
+            </div>
+            
+            <div style="margin-top: 40px; margin-bottom: 10px; text-align: center;">
+                <p class="script-font" style="font-size: 2rem; margin-bottom: 0; line-height: 1.2; text-align: center; width: 100%; display: block;">
+                    Contando cada segundo para<br>nuestra celebración
+                </p>
+            </div>
+            
+            <div class="countdown-container">
+                <div class="cd-box"><span id="days" class="cd-number">00</span><span class="cd-label">Días</span></div>
+                <div class="cd-box"><span id="hours" class="cd-number">00</span><span class="cd-label">Hrs</span></div>
+                <div class="cd-box"><span id="minutes" class="cd-number">00</span><span class="cd-label">Min</span></div>
+                <div class="cd-box"><span id="seconds" class="cd-number">00</span><span class="cd-label">Seg</span></div>
+            </div>
+        </section>
+
+        <section class="framed-section">
+            <h2>Itinerario</h2>
+            <ul class="timeline-list">
+                <li><span class="time">15:00</span> Ceremonia Religiosa</li>
+                <li><span class="time">16:30</span> Traslado a Recepción</li>
+                <li><span class="time">17:00</span> Cóctel de Bienvenida</li>
+                <li><span class="time">18:00</span> Banquete y Fiesta</li>
+            </ul>
+        </section>
+
+        <section class="framed-section">
+            <h2>Ceremonia Religiosa</h2>
+            <p class="script-font" style="font-size: 1.8rem; margin-bottom: 20px; text-align: center; width: 100%; display: block;">
+                Donde comienza<br>nuestro para siempre
+            </p>
+            <div class="church-container">
+                <img src="https://i.postimg.cc/FK56Y4Kc/Iglesia.jpg" alt="Iglesia" class="animated-img">
+            </div>
+            <h3 style="margin-top: 20px;">Parroquia Divino Salvador Chachapa</h3>
+            <a href="https://maps.app.goo.gl/eEERMDRjoJZEDxS98" target="_blank" class="btn" style="margin-top:10px;">Ver Ubicación</a>
+        </section>
+
+        <section class="framed-section">
+            <h2>Recepción</h2>
+            <p style="margin-bottom: 30px;">Celebremos juntos este gran día.</p>
+            <div class="church-container">
+                <img src="https://i.postimg.cc/vmbzRHBN/Salon.jpg" alt="Salon" class="animated-img">
+            </div>
+            <h3>Casa Antulían</h3>
+            <a href="https://maps.app.goo.gl/Rj5vecHGkopuqAhX7" target="_blank" class="btn" style="margin-top:10px;">Ver Ubicación</a>
+        </section>
+
+        <section class="framed-section">
+            <h2>Código de Vestimenta</h2>
+            <p style="margin-bottom: 10px; font-weight: bold; text-transform: uppercase;">Formal</p>
+            <p style="font-size: 0.9rem; margin-bottom: 20px;">
+                Les pedimos amablemente evitar los siguientes colores, <br>
+                reservados para los novios y el cortejo:
+            </p>
+            <div class="palette-container">
+                <div class="color-circle" style="background-color: #FFFFFF;" title="Blanco"></div>
+                <div class="color-circle" style="background-color: #FFD7D7;" title="Rosa Pastel"></div>
+                <div class="color-circle" style="background-color: #F3B6B6;" title="Rosa Medio"></div>
+                <div class="color-circle" style="background-color: #E0A2A2;" title="Rosa Oscuro"></div>
+                <div class="color-circle" style="background-color: #D3D3D3;" title="Gris Claro"></div>
+            </div>
+            <p style="font-size: 0.8rem; font-style: italic; color: #888;">(Blanco, Tonalidades de Rosa y Gris Claro)</p>
+        </section>
+
+        <section class="framed-section">
+            <h2>Mesa de Regalos</h2>
+            <p style="margin-bottom: 20px;">
+                Su presencia es nuestro mejor regalo.<br>
+                Pero si desean tener un detalle con nosotros:
+            </p>
+            <a href="https://mesaderegalos.liverpool.com.mx/" target="_blank" class="btn">
+                Ver Mesa de Regalos
+            </a>
+        </section>
+
+        <section class="framed-section">
+            <h2>Confirma tu Asistencia</h2>
+            <p style="margin-bottom: 30px; font-style: italic; color: #666;">Por favor confirma antes del 1 de Abril</p>
+            
+            <form id="rsvpForm" class="rsvp-container">
+                <div id="tickets-container" class="hidden">
+                    <div class="ticket-card">
+                        <div class="ticket-number" id="ticketCount">0</div>
+                        <div class="ticket-label">INVITADOS</div>
+                    </div>
+                    <div class="ticket-banner">
+                        ¡Te esperamos... NO FALTES!
+                    </div>
+                    <p id="ticket-welcome-msg" style="margin-bottom: 20px; font-size: 0.95rem;"></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tu Nombre Completo</label>
+                    <input type="text" name="nombre" id="nombreInvitado" class="form-input" placeholder="Nombre y Apellidos" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">¿Asistirás?</label>
+                    <select name="asistencia" id="asistenciaSelect" class="form-select" onchange="verificarAsistencia()" required>
+                        <option value="" disabled selected>Selecciona una opción</option>
+                        <option value="si">¡Sí, ahí estaré!</option>
+                        <option value="no">Lo siento, no podré asistir</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="grupoBoletos">
+                    <label class="form-label">Personas que asistirán</label>
+                    <select name="boletos" id="boletosSelect" class="form-select">
+                        </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mensaje (Opcional)</label>
+                    <textarea name="mensaje" id="mensajeNovios" class="form-textarea"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submitBtn">Enviar Confirmación <div class="spinner"></div></button>
+            </form>
+        </section>
+        
+        <footer class="footer-msg">
+            <p class="footer-title">Gracias por ser parte de nuestra historia</p>
+            <p class="footer-text">Su cariño y compañía son el mejor regalo que podríamos recibir.</p>
+            <p class="footer-text" style="margin-top: 15px; font-weight: bold;">Con amor, Yazmin & Saul</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz_CYNFRkKLj6W2mrZlB0d1eVEJiKCY6NecAqomEdtQACFT4tWyqidgq9whpEqlJB0/exec'; 
+
+        // 1. OBTENER PARAMETROS URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const invitadoURL = urlParams.get('nombre');
+        const pasesURL = parseInt(urlParams.get('pases'));
+
+        // 2. CONFIGURAR FORMULARIO AL CARGAR
+        document.addEventListener("DOMContentLoaded", () => {
+            const nombreInput = document.getElementById('nombreInvitado');
+            const ticketsContainer = document.getElementById('tickets-container');
+            const ticketCount = document.getElementById('ticketCount');
+            const ticketWelcomeMsg = document.getElementById('ticket-welcome-msg');
+            const boletosSelect = document.getElementById('boletosSelect');
+
+            if(invitadoURL) {
+                nombreInput.value = invitadoURL;
+            }
+
+            if(pasesURL && pasesURL > 0) {
+                ticketsContainer.classList.remove('hidden');
+                ticketCount.innerText = pasesURL;
+                ticketWelcomeMsg.innerHTML = `Hola <strong>${invitadoURL || 'Invitado'}</strong>, hemos reservado estos lugares especialmente para ti.`;
+
+                boletosSelect.innerHTML = ""; 
+                for (let i = 1; i <= pasesURL; i++) {
+                    let option = document.createElement("option");
+                    option.value = i;
+                    option.text = i + (i === 1 ? " Persona" : " Personas");
+                    if (i === pasesURL) option.selected = true;
+                    boletosSelect.appendChild(option);
+                }
+            } else {
+                ticketsContainer.classList.add('hidden');
+                boletosSelect.innerHTML = ""; 
+                for (let i = 1; i <= 5; i++) {
+                    let option = document.createElement("option");
+                    option.value = i;
+                    option.text = i + " Personas";
+                    boletosSelect.appendChild(option);
+                }
+            }
+        });
+
+        let musicStarted = false;
+        const music = document.getElementById('bgMusic');
+        const welcomeScreen = document.getElementById('welcome-screen');
+
+        function iniciarExperiencia() {
+            if (musicStarted) return;
+            musicStarted = true;
+            const playPromise = music.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => { console.log("Audio ok"); }).catch(error => { console.log("Audio block"); });
+            }
+            welcomeScreen.classList.add('open-state');
+            setTimeout(() => {
+                welcomeScreen.style.opacity = '0';
+                document.getElementById('main-content').style.display = 'block';
+                setTimeout(() => {
+                    welcomeScreen.style.visibility = 'hidden';
+                    document.getElementById('main-content').style.opacity = '1';
+                }, 1000);
+            }, 3500);
+        }
+
+        function toggleMusic() {
+            if (music.paused) { music.play(); document.querySelector('.music-control').style.opacity = '1'; document.querySelector('.music-control').style.transform = "scale(1)"; } 
+            else { music.pause(); document.querySelector('.music-control').style.opacity = '0.7'; }
+        }
+
+        const weddingDate = new Date("April 17, 2027 15:00:00").getTime();
+        setInterval(function() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+        }, 1000);
+
+        // FUNCIÓN CORREGIDA (Sin alimentos)
+        function verificarAsistencia() {
+            const val = document.getElementById('asistenciaSelect').value;
+            const grupoBoletos = document.getElementById('grupoBoletos');
+            
+            if(val === 'no') {
+                grupoBoletos.classList.add('hidden');
+            } else {
+                grupoBoletos.classList.remove('hidden');
+            }
+        }
+
+        const form = document.forms['rsvpForm'];
+        const btn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerHTML = "Procesando... <div class='spinner' style='display:inline-block'></div>";
+            
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => { abrirWhatsApp(); })
+                .catch(error => { abrirWhatsApp(); });
+        });
+
+        // FUNCIÓN WHATSAPP CORREGIDA (Sin alimentos)
+        function abrirWhatsApp() {
+            btn.innerHTML = "¡Enviado!";
+            const nombre = document.getElementById('nombreInvitado').value;
+            const asistencia = document.getElementById('asistenciaSelect').value;
+            const boletos = document.getElementById('boletosSelect').value;
+            const mensaje = document.getElementById('mensajeNovios').value;
+
+            let texto = "";
+            if (asistencia === 'si') {
+                texto = `¡Hola Yazmin y Saul! Soy *${nombre}*. \n\n¡Qué emoción! Confirmo que *SÍ ASISTIRÉ* a su boda el 17 de Abril. 💍✨ \n\n🎟️ Confirmados: ${boletos} personas\n`;
+                if(mensaje) texto += `💌 Mensaje: ${mensaje}`;
+            } else {
+                texto = `Hola Yazmin y Saul. Soy *${nombre}*. \n\nLamentablemente *NO PODRÉ ASISTIR*, pero les deseo toda la felicidad. ❤️ \n\n`;
+                if(mensaje) texto += `💌 Mensaje: ${mensaje}`;
+            }
+            window.location.href = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+        }
+    </script>
+</body>
+</html>
